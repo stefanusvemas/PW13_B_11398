@@ -7,6 +7,7 @@ import {
   Spinner,
   Stack,
   Button,
+  Form,
 } from "react-bootstrap";
 import { GetMyWatchLater, DeleteWatchLater } from "../api/apiWatchLater";
 import { getThumbnail } from "../api";
@@ -15,10 +16,11 @@ import ModalDeleteWatchLater from "../components/modals/ModalDeleteWatchLater";
 const WatchLaterPage = () => {
   const [watchLater, setWatchLater] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("");
 
-  const fetchContents = () => {
+  const fetchContents = (filter = "") => {
     setIsLoading(true);
-    GetMyWatchLater()
+    GetMyWatchLater(filter)
       .then((data) => {
         setWatchLater(data);
         setIsLoading(false);
@@ -27,6 +29,13 @@ const WatchLaterPage = () => {
         console.log(err);
       });
   };
+
+  const handleFilterChange = (event) => {
+    const filterValue = event.target.value;
+    setSelectedFilter(filterValue);
+    fetchContents(filterValue);
+  };
+
   useEffect(() => {
     fetchContents();
   }, []);
@@ -34,9 +43,23 @@ const WatchLaterPage = () => {
     <Container className="mt-4">
       <Stack direction="horizontal" gap={3} className="mb-3">
         <h1 className="h4 fw-bold mb-0 text-nowrap text-light">
-          Rekomendasi Untukmu
+          Watch Later Videos
         </h1>
         <hr className="border-top border-light opacity-50 w-100" />
+        <Form.Select
+          size="sm"
+          className="w-25"
+          onChange={handleFilterChange}
+          value={selectedFilter}>
+          <option selected disabled>
+            Filter Watch Later
+          </option>
+          <option value="">Semua Video</option>
+          <option value="today">Hari ini</option>
+          <option value="yesterday"> Kemarin</option>
+          <option value="this_month">Bulan ini</option>
+          <option value="this_year">Tahun ini</option>
+        </Form.Select>
       </Stack>
       {isLoading ? (
         <div className="text-center">
@@ -53,7 +76,7 @@ const WatchLaterPage = () => {
       ) : watchLater?.length > 0 ? (
         <div className="">
           {watchLater?.map((watchLater) => (
-            <Row className="mt-2 mb-4" key={watchLater.id}>
+            <Row className="mt-1" key={watchLater.id}>
               <Col className="mb-3">
                 <div className="card h-100 justify-content-center">
                   <div className="card-body m-0 p-0">

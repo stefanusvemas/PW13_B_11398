@@ -7,22 +7,52 @@ use Illuminate\Http\Request;
 use App\Models\WatchLaters;
 use App\Models\User;
 use App\Models\Contents;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
 class WatchLaterController extends Controller
 {
-    public function showWatchLaterbyUser($id)
+    public function showWatchLaterbyUser($id, $filter = null)
     {
         $user = User::find($id);
+        $today = Carbon::today();
         if (!$user) {
             return response([
                 'message' => 'User Not Found',
                 'data' => null
             ], 404);
         }
-        $watchLater = WatchLaters::where('id_user', $user->id)->get()->load('content');
+
+        if ($filter) {
+            switch ($filter) {
+                case 'today':
+                    $watchLater = WatchLaters::where('id_user', $user->id)->whereDate('date_added', Carbon::today()->format("Y-m-d"))->get()->load('content');
+                    break;
+                case 'yesterday':
+                    $watchLater = WatchLaters::where('id_user', $user->id)->whereDate('date_added', Carbon::yesterday()->format("Y-m-d"))->get()->load('content');
+                    break;
+                case 'this_month':
+                    $watchLater = WatchLaters::where('id_user', $user->id)->whereMonth('date_added', Carbon::now()->month)->whereYear('date_added', Carbon::now()->year)->get()->load('content');
+                    break;
+                case 'this_year':
+                    $watchLater = WatchLaters::where('id_user', $user->id)->whereYear('date_added', Carbon::now()->year)->get()->load('content');
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            $watchLater = WatchLaters::where('id_user', $user->id)->get()->load('content');
+        }
+
+        if ($watchLater->isEmpty()) {
+            return response([
+                'message' => 'Watch Later List is Empty',
+                'data' => null
+            ], 200);
+        }
+
         $watchLater->transform(function ($item) {
             $item['date_added'] = date_create($item['date_added'])->format('Y-m-d');
             return $item;

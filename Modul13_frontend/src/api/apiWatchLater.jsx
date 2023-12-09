@@ -1,9 +1,9 @@
 import useAxios from ".";
 
-export const GetMyWatchLater = async () => {
+export const GetMyWatchLater = async (filter = "") => {
   const id = JSON.parse(sessionStorage.getItem("user")).id;
   try {
-    const response = await useAxios.get(`/watch_laters/user/${id}`, {
+    const response = await useAxios.get(`/watch_laters/user/${id}/${filter}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,

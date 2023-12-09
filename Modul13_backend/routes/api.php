@@ -33,4 +33,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/watch_laters/user/{id}', [App\Http\Controllers\Api\WatchLaterController::class, 'showWatchLaterbyUser']);
     Route::post('/watch_laters', [App\Http\Controllers\Api\WatchLaterController::class, 'store']);
     Route::delete('/watch_laters/{id}', [App\Http\Controllers\Api\WatchLaterController::class, 'destroy']);
+
+    // Filter
+    Route::get('/watch_laters/user/{id}/{filter}', [App\Http\Controllers\Api\WatchLaterController::class, 'showWatchLaterbyUser']);
 });
