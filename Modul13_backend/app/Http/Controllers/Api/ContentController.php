@@ -28,20 +28,20 @@ class ContentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function showContentbyUser($id) {
+    public function showContentbyUser($id)
+    {
         $user = User::find($id);
-        if(!$user){
+        if (!$user) {
             return response([
                 'message' => 'User Not Found',
                 'data' => null
-            ],404);
+            ], 404);
         }
         $contents = Contents::where('id_user', $user->id)->get();
         return response([
-            'message' => 'Contents of '.$user->name.' Retrieved',
+            'message' => 'Contents of ' . $user->name . ' Retrieved',
             'data' => $contents
-        ],200);
-
+        ], 200);
     }
 
 
@@ -49,20 +49,20 @@ class ContentController extends Controller
     {
         $storeData = $request->all();
 
-        $validate = Validator::make($storeData,[
+        $validate = Validator::make($storeData, [
             'title' => 'required|max:60',
             'thumbnail' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'required',
         ]);
         if ($validate->fails()) {
-            return response(['message'=> $validate->errors()],400);
+            return response(['message' => $validate->errors()], 400);
         }
         $idUser = Auth::user()->id;
         $user = User::find($idUser);
-        if(is_null($user)){
+        if (is_null($user)) {
             return response([
                 'message' => 'User Not Found'
-            ],404);
+            ], 404);
         }
         $uploadFolder = 'contents';
         $image = $request->file('thumbnail');
@@ -76,7 +76,7 @@ class ContentController extends Controller
         return response([
             'message' => 'Content Added Successfully',
             'data' => $contents,
-        ],200);
+        ], 200);
     }
 
     /**
@@ -86,17 +86,17 @@ class ContentController extends Controller
     {
         $contents = Contents::find($id);
 
-        if($contents){
+        if ($contents) {
             return response([
                 'message' => 'Content Found',
                 'data' => $contents
-            ],200);
+            ], 200);
         }
 
         return response([
             'message' => 'Content Not Found',
             'data' => null
-        ],404);
+        ], 404);
     }
 
     /**
@@ -105,30 +105,30 @@ class ContentController extends Controller
     public function update(Request $request, string $id)
     {
         $content = Contents::find($id);
-        if(is_null($content)){
+        if (is_null($content)) {
             return response([
                 'message' => 'Content Not Found',
                 'data' => null
-            ],404);
+            ], 404);
         }
 
         $updateData = $request->all();
 
-        $validate = Validator::make($updateData,[
+        $validate = Validator::make($updateData, [
             'title' => 'required|max:60',
             'description' => 'required',
         ]);
         if ($validate->fails()) {
-            return response(['message'=> $validate->errors()],400);
+            return response(['message' => $validate->errors()], 400);
         }
         $idUser = Auth::user()->id;
         $user = User::find($idUser);
-        if(is_null($user)){
+        if (is_null($user)) {
             return response([
                 'message' => 'User Not Found'
-            ],404);
+            ], 404);
         }
-        if($request->hasFile('thumbnail')){
+        if ($request->hasFile('thumbnail')) {
             // kalau kalian membaca ini, ketahuilah bahwa gambar tidak akan bisa diupdate karena menggunakan method PUT ;)
             // kalian bisa mengubahnya menjadi POST atau PATCH untuk mengupdate gambar
             $uploadFolder = 'contents';
@@ -137,7 +137,7 @@ class ContentController extends Controller
             $uploadedImageResponse = basename($image_uploaded_path);
 
             // hapus data thumbnail yang lama dari storage
-            Storage::disk('public')->delete('contents/'.$content->thumbnail);
+            Storage::disk('public')->delete('contents/' . $content->thumbnail);
 
             // set thumbnail yang baru
             $updateData['thumbnail'] = $uploadedImageResponse;
@@ -148,7 +148,7 @@ class ContentController extends Controller
         return response([
             'message' => 'Content Updated Successfully',
             'data' => $content,
-        ],200);
+        ], 200);
     }
 
     /**
@@ -158,23 +158,23 @@ class ContentController extends Controller
     {
         $contents = Contents::find($id);
 
-        if(is_null($contents)){
+        if (is_null($contents)) {
             return response([
                 'message' => 'Content Not Found',
                 'data' => null
-            ],404);
+            ], 404);
         }
 
-        if($contents->delete()){
+        if ($contents->delete()) {
             return response([
                 'message' => 'Content Deleted Successfully',
                 'data' => $contents,
-            ],200);
+            ], 200);
         }
 
         return response([
             'message' => 'Delete Content Failed',
             'data' => null,
-        ],400);
+        ], 400);
     }
 }

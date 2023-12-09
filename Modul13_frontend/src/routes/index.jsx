@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import UserLayout from "../layouts/UserLayout";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import WatchLaterPage from "../pages/WatchLaterPage";
 import DashboardPage from "../pages/DashboardPage";
 import ContentPage from "../pages/ContentPage";
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/user/content",
         element: <ContentPage />,
+      },
+      {
+        path: "/user/watch-later",
+        element: <WatchLaterPage />,
       },
     ],
   },

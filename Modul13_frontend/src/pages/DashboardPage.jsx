@@ -1,10 +1,36 @@
 import { useEffect, useState } from "react";
-import { Alert, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
+import {
+  Alert,
+  Col,
+  Container,
+  Row,
+  Spinner,
+  Stack,
+  Button,
+} from "react-bootstrap";
+import { FaStopwatch } from "react-icons/fa";
 import { GetAllContents } from "../api/apiContent";
+import { StoreWatchLater } from "../api/apiWatchLater";
 import { getThumbnail } from "../api";
+import { toast } from "react-toastify";
+
 const DashboardPage = () => {
   const [contents, setContents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const AddToWatchLater = async (id) => {
+    setIsPending(true);
+    StoreWatchLater(id)
+      .then((response) => {
+        setIsPending(false);
+        toast.success(response.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsPending(false);
+        toast.warning(err.message);
+      });
+  };
   useEffect(() => {
     setIsLoading(true);
     GetAllContents()
@@ -48,9 +74,29 @@ const DashboardPage = () => {
                   className="card-img w-100 h-100 object-fit-cover bg-light"
                   alt="..."
                 />
+
                 <div className="card-body">
-                  <h5 className="card-title text-truncate">{content.title}</h5>
-                  <p className="card-text">{content.description}</p>
+                  <Row>
+                    <Col>
+                      <h5 className="card-title text-truncate">
+                        {content.title}
+                      </h5>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <p className="card-text">{content.description}</p>
+                    </Col>
+                    <Col>
+                      <div className="text-end">
+                        <Button
+                          className="btn-success"
+                          onClick={() => AddToWatchLater(content.id)}>
+                          <FaStopwatch />
+                        </Button>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
               </div>
             </Col>
